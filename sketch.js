@@ -8,10 +8,14 @@ let dataLoaded = false;
 let count;
 let min = 20
 let max = 300
+let tPrev = 0;
 
 // from kinectron.json
 let handleft = 7
 let handright = 11
+const box = document.getElementsByClassName('box')[0]
+const containers = document.getElementsByClassName('holder')
+
 
 function preload() {
     data = loadJSON('../kinectron-recordings/skeleton.json',loadData);
@@ -39,15 +43,31 @@ function setup(){
       // let amp = data[i].amplitude;
       let lpos = map(lData,-1,1,max,min);
       let rpos = map(rData,-1,1,max,min);
-      let time = map(tData,0,tMax,0,width);
+      
+      let tDiff = tData - tPrev
+
+      // let time = map(tData,0,tMax,0,width);
       // let amplitude = map(amp,0,50,height,290);
       rpositions.push(rpos)
       lpositions.push(lpos)
       // amplitudes.push(amplitude)
-      times.push(time)
+      times.push(tDiff)
+      tPrev = tData
       }
   }
+  for(const container of containers) {
+    container.addEventListener("dragover", dragover)
+    container.addEventListener("dragenter", dragenter)
+    container.addEventListener("drop", drop)
+  }
+  let sum = 0;
+  for( var i = 0; i < times.length; i++ ){
+      sum += times[i]; //don't forget to add the base
+  }  let avg = sum / times.length;
+  console.log(avg)
 }
+
+// 136 ms between frames on avg for MultiFrame output
 
 function waveForm(ypos,name,inMax,outMin,outMax,nameheight,hue) {
   noStroke()
@@ -78,6 +98,7 @@ function draw(){
   line(mouseX,height,mouseX,0)
 
   for (var i = 0; i < count-1; i++){
+
     strokeWeight(1)
     stroke(200)
     line(times[i],height-80,times[i],height-60)
@@ -89,4 +110,15 @@ function draw(){
       }
 
   }
+
+}
+
+function dragover(e) {
+  e.preventDefault()
+}
+function dragenter(e) {
+  e.preventDefault()
+}
+function drop() {
+  this.append(box)
 }
