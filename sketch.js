@@ -49,8 +49,8 @@ function loadData(data) {
 function setup() {
   makeSubDrop(joints,"jointBoxY1")
   makeSubDrop(joints,"jointBoxY2")
-  createCanvas(1600, 400);
-  background(00)
+  createCanvas(window.innerWidth, 400);
+  background(0)
   colorMode(HSB)
   textSize(18)
 }
