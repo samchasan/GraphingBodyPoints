@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+</h3><!DOCTYPE html>
 <html>
 
 <head>
@@ -11,14 +11,25 @@
 </head>
 
 <body>
-    Select file
-    <select id="selectBox" onchange='selectFromDropDown(`selectBox`, `dataFiles`,`file`)'></select>
-    Y1
-    <select id="jointBoxY1" onchange="selectFromDropDown(`jointBoxY1`,`joints`,`line1`)"></select>
-    Y2
-    <select id="jointBoxY2" onchange="selectFromDropDown(`jointBoxY2`,`joints`,`line2`)"></select>
-    <button onclick='submit()'>submit</button>
-    <br>
+<div id ="parent">
+  <div id ="fileBox">
+  <h3>Select file </h3>
+  <select id="selectBox" onchange='selectFromDropDown(`selectBox`, `dataFiles`,`file`)'></select>
+  </div>
+  <div id="jointBox">
+  <h3> Select Joints to compare </h3>
+  <select id="jointBoxY1" onchange="selectFromDropDown(`jointBoxY1`,`joints`,`line1`)"></select>  Joint 1
+  <select id="jointBoxY2" onchange="selectFromDropDown(`jointBoxY2`,`joints`,`line2`)"></select>  Joint 2
+  </div>
+  <div id = "radioBox">
+  <h3> Select Axis </h3>
+  <input id = "firstID"type="radio" name="axis" value="0"> X
+  <input type="radio" name="axis" value="1"> Y
+  <input type="radio" name="axis" value="2"> Z
+</div>
+</div>
+  <br>
+  <button onclick='submit()'>submit</button>
 </body>
 
 

@@ -1,3 +1,34 @@
+h3 {
+  padding: 0px;
+  font-family: Helvetica, sans-serif;
+}
+
+html {
+  font-family: Helvetica, sans-serif;
+}
+
+div {
+  position:relative;
+  /* padding: 10px; */
+  text-align: center;
+  border-radius: 10px;
+  background: lightblue;
+  flex: 0.7;
+}
+
+#jointBox{
+padding-bottom: 15px;
+ border-style: solid;
+  border-radius: 0px;
+  border-color: lightgreen;
+  flex: 1;
+  background: lightgreen;
+}
+
+#parent {
+  display: flex;
+}
+
 /* Dropdown Button */
 .dropbtn {
   background-color: #3498DB;
@@ -39,6 +70,19 @@
 
 /* Change color of dropdown links on hover */
 /* .dropdown-content child:hover {background-color: #ddd} */
+
+input {
+  margin-left: 30px;
+}
+
+#firstID {
+  margin-left:0px;
+}
+
+#jointBoxY2{
+  margin-left: 30px;
+}
+
 
 select {
   /* display: none */

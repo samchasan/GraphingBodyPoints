@@ -28,7 +28,12 @@ let selectedFile;
 let dataFilesMade = false
 let line1
 let line2
-let axes = [0,1,2]
+let axis;
+let axisChoice;
+let axes = ['depthX','depthY','cameraZ']
+let l1Data;
+let l2Data;
+
 
 // preload initial data set
 function preload() {
@@ -53,12 +58,11 @@ function setup() {
 function draw() {
   background(0)
   drawLines()
-  drawAxis()
+  drawTimeline()
   // console.log(mouseY)
 }
 
 function submit(){
-  let axis = axes[1]
   getDataPoints(line1,line2)
 }
 
@@ -72,25 +76,39 @@ function getDataPoints(line1,line2){
     positions2 = []
     timesAdj = []
     for (var i = 1; i < count; i++) {
-      let l1Data = data[i].joints[line1].depthY;
-      let l2Data = data[i].joints[line2].depthY;
-      let tData = data[i].record_timestamp;
+      if (axisChoice == 0){
+      l1Data = data[i].joints[line1].depthX;
+      l2Data = data[i].joints[line2].depthX;
+      mapData(0,1)
+    } else if(axisChoice == 1){
+      l1Data = data[i].joints[line1].depthY;
+      l2Data = data[i].joints[line2].depthY;
+      mapData(0,1)
+    } else if(axisChoice == 2){
+      l1Data = data[i].joints[line1].cameraZ;
+      l2Data = data[i].joints[line2].cameraZ;
+      mapData(2,4)
+      }
       // let amp = data[i].amplitude;
-      let pos1 = map(l1Data, 0, 1, min, max);
-      let pos2 = map(l2Data, 0, 1, min, max);
       // let tDiff = tData - tPrev
-      let time = map(tData, 0, tMax, 0, width);
       // let amplitude = map(amp,0,50,height,290);
-      positions1.push(pos1)
-      positions2.push(pos2)
       // amplitudes.push(amplitude)
       // times.push(tDiff)
+      let tData = data[i].record_timestamp;
+      let time = map(tData, 0, tMax, 0, width);
       timesAdj.push(time)
       // tPrev = tData
     }
   }
 dataGot = true
 console.log(dataGot)
+}
+
+function mapData(low, high){
+  let pos1 = map(l1Data, low, high, min, max);
+  let pos2 = map(l2Data, low, high, min, max);
+  positions1.push(pos1)
+  positions2.push(pos2)
 }
 
 function drawLines() {
@@ -124,7 +142,7 @@ function waveForm(positions, name, nameheight, hue) {
   dataGot = false
 }
 
-function drawAxis() {
+function drawTimeline() {
   // let axis = axis
   for (var i = 0; i < count - 1; i++) {
     strokeWeight(1)
@@ -154,6 +172,14 @@ function selectFromDropDown(id, array, var2affect) {
           }
         }
 }
+
+// get radio button radioValue
+
+$(document).ready(function(){
+       $("input[type='radio']").click(function(){
+           axisChoice = $("input[name='axis']:checked").val();
+       });
+});
 
 
 
