@@ -1,124 +1,195 @@
+// would be nice to have 'laggy' video also so you can see yourself
+// would be nice to have start capture button also visualized
+// can we send instructions to kinect like: fps, how many things to send,
+
+
+var joints = [  "SPINEBASE", "SPINEMID", "NECK", "HEAD", "SHOULDERLEFT", "ELBOWLEFT",
+                "WRISTLEFT", "HANDLEFT", "SHOULDERRIGHT", "ELBOWRIGHT", "WRISTRIGHT",
+                "HANDRIGHT", "HIPLEFT", "KNEELEFT", "ANKLELEFT", "FOOTLEFT", "HIPRIGHT",
+                "KNEERIGHT", "ANKLERIGHT",  "FOOTRIGHT","SPINESHOULDER",  "HANDTIPLEFT",
+                "THUMBLEFT", "HANDTIPRIGHT", "THUMBRIGHT"]
+
 let data = {}; // Global object to hold results from the loadJSON call
-let positions = [];
-let rpositions = []
-let lpositions = []
+// let positions = [];
+let positions1 = [];
+let positions2 = [];
 // let amplitudes = []
-let times = []
+let times = [];
+let timesAdj = [];
 let dataLoaded = false;
+let dataGot = false
 let count;
-let min = 20
-let max = 300
+let min = 20;
+let max = 300;
 let tPrev = 0;
+let dataFiles = [];
+let selectedValue;
+let selectedFile;
+let dataFilesMade = false
+let line1
+let line2
+let axes = [0,1,2]
 
-// from kinectron.json
-let handleft = 7
-let handright = 11
-const box = document.getElementsByClassName('box')[0]
-const containers = document.getElementsByClassName('holder')
-
-
+// preload initial data set
 function preload() {
-    data = loadJSON('../kinectron-recordings/skeleton.json',loadData);
+  let kinectronData = loadJSON("libraries/kinectron.json")
+  makeDropDown(skeletonFiles, "selectBox")
 }
-
-function loadData() {
+// call back to proceed with data visualization
+function loadData(data) {
+  // console.log(data)
   dataLoaded = true
-
 }
 
-function setup(){
-  createCanvas(1600,400);
+function setup() {
+  makeSubDrop(joints,"jointBoxY1")
+  makeSubDrop(joints,"jointBoxY2")
+  createCanvas(1600, 400);
   background(00)
   colorMode(HSB)
   textSize(18)
+}
+//
+function draw() {
+  background(0)
+  drawLines()
+  drawAxis()
+  // console.log(mouseY)
+}
 
-  if (dataLoaded = true){
+function submit(){
+  let axis = axes[1]
+  getDataPoints(line1,line2)
+}
+
+
+function getDataPoints(line1,line2){
+// create graph from data & evaluate avg delta T
+  if (dataLoaded = true) {
     count = Object.keys(data).length;
-    let tMax = data[count-1].record_timestamp
-
-    for (var i = 1; i < count; i++){
-      let lData = data[i].bodies[5].joints[handleft].depthY;
-      let rData = data[i].bodies[5].joints[handright].depthY;
+    let tMax = data[count - 1].record_timestamp
+    positions1 = []
+    positions2 = []
+    timesAdj = []
+    for (var i = 1; i < count; i++) {
+      let l1Data = data[i].joints[line1].depthY;
+      let l2Data = data[i].joints[line2].depthY;
       let tData = data[i].record_timestamp;
       // let amp = data[i].amplitude;
-      let lpos = map(lData,-1,1,max,min);
-      let rpos = map(rData,-1,1,max,min);
-      
-      let tDiff = tData - tPrev
-
-      // let time = map(tData,0,tMax,0,width);
+      let pos1 = map(l1Data, 0, 1, min, max);
+      let pos2 = map(l2Data, 0, 1, min, max);
+      // let tDiff = tData - tPrev
+      let time = map(tData, 0, tMax, 0, width);
       // let amplitude = map(amp,0,50,height,290);
-      rpositions.push(rpos)
-      lpositions.push(lpos)
+      positions1.push(pos1)
+      positions2.push(pos2)
       // amplitudes.push(amplitude)
-      times.push(tDiff)
-      tPrev = tData
-      }
+      // times.push(tDiff)
+      timesAdj.push(time)
+      // tPrev = tData
+    }
   }
-  for(const container of containers) {
-    container.addEventListener("dragover", dragover)
-    container.addEventListener("dragenter", dragenter)
-    container.addEventListener("drop", drop)
-  }
-  let sum = 0;
-  for( var i = 0; i < times.length; i++ ){
-      sum += times[i]; //don't forget to add the base
-  }  let avg = sum / times.length;
-  console.log(avg)
+dataGot = true
+console.log(dataGot)
 }
 
-// 136 ms between frames on avg for MultiFrame output
+function drawLines() {
+  // background(0)
+  if (dataGot = true){
+  waveForm(positions1, "Y 1", 30, 10)
+  waveForm(positions2, "Y 2", 60, 40)
+  // waveForm(amplitudes, "Music Amplitude", 400, 290, 400, 90 , 70)
+  stroke(100, 0, 100)
+  strokeWeight(1);
+}
+line(mouseX, height, mouseX, 0)
+}
 
-function waveForm(ypos,name,inMax,outMin,outMax,nameheight,hue) {
+
+// generate line graph for input
+function waveForm(positions, name, nameheight, hue) {
   noStroke()
   fill(hue, 100, 100)
-  text(name,20,nameheight)
-  vertices = []
-  let vertexPt = {}
+  text(name, 20, nameheight)
   noFill();
   stroke(hue, 100, 100);
-  beginShape();
   strokeWeight(1);
-  for (var i = 0; i < ypos.length; i += 1) {
-    var x = times[i]
-    var y = map(ypos[i], 0, inMax, outMin,outMax);
-    vertex(x, y);
-    // console.log(x)
-  }
+  beginShape();
+  positions.forEach(function(pos,i){
+    var time = timesAdj[i]
+    // vertex(time,pos);
+    ellipse(time,pos,2,2)
+    })
   endShape();
+  dataGot = false
 }
 
-function draw(){
-  background(0)
-  waveForm(rpositions, "Y Right", max, 50, 150, 30, 10)
-  waveForm(lpositions,"Y Left", max, 150, 250, 60, 40)
-  // waveForm(amplitudes, "Music Amplitude", 400, 290, 400, 90 , 70)
-  stroke(100,0,100)
-  strokeWeight(1);
-  line(mouseX,height,mouseX,0)
-
-  for (var i = 0; i < count-1; i++){
-
+function drawAxis() {
+  // let axis = axis
+  for (var i = 0; i < count - 1; i++) {
     strokeWeight(1)
     stroke(200)
-    line(times[i],height-80,times[i],height-60)
+    line(timesAdj[i], height - 80, timesAdj[i], height - 60)
     noStroke()
-    let overlap = abs(mouseX-times[i])
-      if(overlap<9){
-        fill(200)
-        text(data[i].record_timestamp/1000,times[0],height-100)
-      }
-
+    let overlap = abs(mouseX - timesAdj[i])
+    if (overlap < 9) {
+      fill(200)
+      text(data[i].record_timestamp / 1000, timesAdj[0], height - 100)
+    }
   }
-
 }
 
-function dragover(e) {
-  e.preventDefault()
+function selectFromDropDown(id, array, var2affect) {
+      let idString = "`" + id + "`"
+      var selectBox = document.getElementById(id);
+      let selectedValue = selectBox.options[selectBox.selectedIndex].value;
+      if (array == 'dataFiles'){
+        data = dataFiles[selectedValue]
+        // console.log(data)
+      } else if (array == 'joints'){
+        if(var2affect == 'line1'){
+        line1 = selectedValue
+        } else if(var2affect == 'line2'){
+        line2 = selectedValue
+          }
+        }
 }
-function dragenter(e) {
-  e.preventDefault()
+
+
+
+function makeDropDown(input, id){
+  // read generateFileList.js and generate a dropdown menu from the arraylist contained
+    let inputLength = input.length
+    let select = document.getElementById(id);
+    for (var i = 0; i < inputLength; i++) {
+        var skeleton = "/" + input[i];
+        var option = document.createElement("option");
+        data = loadJSON('kinectron-recordings/skeleton_files/'+input[i], loadData(data));
+        dataFiles.push(data)
+        option.text = input[i];
+        option.value = i;
+        select.appendChild(option);
+      }
 }
-function drop() {
-  this.append(box)
+
+function makeSubDrop(input, id){
+    let inputLength = input.length
+    let select = document.getElementById(id);
+    for (var i = 0; i < 25; i++){
+      let name = joints[i]
+      var option = document.createElement("option");
+      option.text = name;
+      option.value = i;
+      select.appendChild(option);
+    }
+}
+
+
+function getAvgTime() {
+  let sum = 0;
+  times.forEach((time) => {
+    sum += time;
+  });
+  let avg = sum / times.length;
+  // console.log(avg)
 }

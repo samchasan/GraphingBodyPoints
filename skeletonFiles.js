@@ -1,0 +1,1 @@
+var skeletonFiles = ['positions-test1.json','positions-test2.json','positions.json','skeleton.json','skeleton1543870264018.json','skeleton_multiframe.json','skeleton_multiframe0.json','skeleton_singleframe.json','skeleton_singleframe0.json',];

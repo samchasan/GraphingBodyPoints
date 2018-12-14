@@ -2,22 +2,24 @@
 <html>
 
 <head>
-  <script src="p5.js"></script>
-  <script src="p5.dom.js"></script>
-  <style>
-  
-  </style>
+  <script src="libraries/p5.js"></script>
+  <script src="libraries/p5.dom.js"></script>
+  <script src="skeletonFiles.js"></script>
+  <script src="libraries/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="libraries/style.css">
+  <script src="sketch.js"></script>
 </head>
 
 <body>
-  <script src="sketch.js"></script>
-  <div class="container">
-    <div class="box" draggable="true"></div>
-  </div>
-  <div class="container">
-  </div>
+    Select file
+    <select id="selectBox" onchange='selectFromDropDown(`selectBox`, `dataFiles`,`file`)'></select>
+    Y1
+    <select id="jointBoxY1" onchange="selectFromDropDown(`jointBoxY1`,`joints`,`line1`)"></select>
+    Y2
+    <select id="jointBoxY2" onchange="selectFromDropDown(`jointBoxY2`,`joints`,`line2`)"></select>
+    <button onclick='submit()'>submit</button>
+    <br>
 </body>
 
-<a href="http://google.com" class="btn btn-default">Go to Google</a>
 
 </html>
