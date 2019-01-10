@@ -1,8 +1,9 @@
-// would be nice to have 'laggy' video also so you can see yourself
-// would be nice to have start capture button also visualized
-// can we send instructions to kinect like: fps, how many things to send,
+// TO ADD
+// -- 'laggy' video so you can see yourself
+// -- start capture button also visualized
+//
 
-
+let timePoints = []
 var joints = [  "SPINEBASE", "SPINEMID", "NECK", "HEAD", "SHOULDERLEFT", "ELBOWLEFT",
                 "WRISTLEFT", "HANDLEFT", "SHOULDERRIGHT", "ELBOWRIGHT", "WRISTRIGHT",
                 "HANDRIGHT", "HIPLEFT", "KNEELEFT", "ANKLELEFT", "FOOTLEFT", "HIPRIGHT",
@@ -33,6 +34,7 @@ let axisChoice;
 let axes = ['depthX','depthY','cameraZ']
 let l1Data;
 let l2Data;
+let overlap;
 
 
 // preload initial data set
@@ -59,13 +61,18 @@ function draw() {
   background(0)
   drawLines()
   drawTimeline()
-  // console.log(mouseY)
+  checkPoints()
+
+  console.log(timePoints.length)
 }
 
-function submit(){
-  getDataPoints(line1,line2)
+function checkPoints(){
+  timePoints.forEach( point => {
+  point.display()
+  point.checkDist()
+  })
+  timePoints = []
 }
-
 
 function getDataPoints(line1,line2){
 // create graph from data & evaluate avg delta T
@@ -101,7 +108,7 @@ function getDataPoints(line1,line2){
     }
   }
 dataGot = true
-console.log(dataGot)
+// console.log(dataGot)
 }
 
 function mapData(low, high){
@@ -120,7 +127,7 @@ function drawLines() {
   stroke(100, 0, 100)
   strokeWeight(1);
 }
-line(mouseX, height, mouseX, 0)
+  line(mouseX, height, mouseX, 0)
 }
 
 
@@ -130,15 +137,10 @@ function waveForm(positions, name, nameheight, hue) {
   fill(hue, 100, 100)
   text(name, 20, nameheight)
   noFill();
-  stroke(hue, 100, 100);
-  strokeWeight(1);
-  beginShape();
   positions.forEach(function(pos,i){
     var time = timesAdj[i]
-    // vertex(time,pos);
-    ellipse(time,pos,2,2)
+    timePoints.push(new timePoint(time,pos,i,hue))
     })
-  endShape();
   dataGot = false
 }
 
@@ -149,73 +151,33 @@ function drawTimeline() {
     stroke(200)
     line(timesAdj[i], height - 80, timesAdj[i], height - 60)
     noStroke()
-    let overlap = abs(mouseX - timesAdj[i])
-    if (overlap < 9) {
-      fill(200)
-      text(data[i].record_timestamp / 1000, timesAdj[0], height - 100)
-    }
   }
 }
 
-function selectFromDropDown(id, array, var2affect) {
-      let idString = "`" + id + "`"
-      var selectBox = document.getElementById(id);
-      let selectedValue = selectBox.options[selectBox.selectedIndex].value;
-      if (array == 'dataFiles'){
-        data = dataFiles[selectedValue]
-        // console.log(data)
-      } else if (array == 'joints'){
-        if(var2affect == 'line1'){
-        line1 = selectedValue
-        } else if(var2affect == 'line2'){
-        line2 = selectedValue
-          }
-        }
-}
 
-// get radio button radioValue
+class timePoint {
+  constructor(x,y,id,hue){
+    this.pos = createVector(x,y)
+    this.id = id
+    this.hue = hue
+  }
 
-$(document).ready(function(){
-       $("input[type='radio']").click(function(){
-           axisChoice = $("input[name='axis']:checked").val();
-       });
-});
+  display(){
+    fill(this.hue, 100, 100)
+    ellipse(this.pos.x, this.pos.y, 2, 2)
+  }
 
-
-
-function makeDropDown(input, id){
-  // read generateFileList.js and generate a dropdown menu from the arraylist contained
-    let inputLength = input.length
-    let select = document.getElementById(id);
-    for (var i = 0; i < inputLength; i++) {
-        var skeleton = "/" + input[i];
-        var option = document.createElement("option");
-        data = loadJSON('kinectron-recordings/skeleton_files/'+input[i], loadData(data));
-        dataFiles.push(data)
-        option.text = input[i];
-        option.value = i;
-        select.appendChild(option);
-      }
-}
-
-function makeSubDrop(input, id){
-    let inputLength = input.length
-    let select = document.getElementById(id);
-    for (var i = 0; i < 25; i++){
-      let name = joints[i]
-      var option = document.createElement("option");
-      option.text = name;
-      option.value = i;
-      select.appendChild(option);
+  checkDist(){
+    const xDist = abs(mouseX - this.pos.x)
+    const yDist = this.hue + 100
+    if (xDist < 2 ) {
+      noStroke()
+      fill(this.hue, 100, 100)
+      textSize(20)
+      text(floor(this.pos.y), 50, height - yDist)
+      fill(200)
+      text(floor(timesAdj[this.id]), 50, height - 10)
     }
-}
+  }
 
-
-function getAvgTime() {
-  let sum = 0;
-  times.forEach((time) => {
-    sum += time;
-  });
-  let avg = sum / times.length;
-  // console.log(avg)
 }

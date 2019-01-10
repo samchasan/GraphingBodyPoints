@@ -1,0 +1,77 @@
+h3 {
+  padding: 0px;
+  font-family: Helvetica, sans-serif;
+}
+
+html {
+  font-family: Helvetica, sans-serif;
+}
+
+div {
+  position:relative;
+  text-align: center;
+  border-radius: 10px;
+  background: lightblue;
+  flex: 0.7;
+}
+
+#jointBox{
+padding-bottom: 15px;
+ border-style: solid;
+  border-radius: 0px;
+  border-color: lightgreen;
+  flex: 1;
+  background: lightgreen;
+}
+
+#parent {
+  display: flex;
+}
+
+.btn {
+  background-color: #3498DB;
+  position: relative;
+  left: 46vw;
+  color: white;
+  padding: 16px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition-duration: 0.5s;
+  transition-property: background-color;
+}
+
+.btn:hover, .btn:focus {
+  background-color: #2980B9;
+}
+
+input {
+  margin-left: 30px;
+}
+
+#firstID {
+  margin-left:0px;
+}
+
+#jointBoxY2{
+  margin-left: 30px;
+}
+
+option {
+  cursor: pointer;
+  font-family: Helvetica, sans-serif;
+  background-color: #aaa
+}
+
+option:hover{
+  background-color: #ddd
+}
+
+option:selected{
+  background-color: #555
+}
+
+option:active{
+  background-color: #888
+}
